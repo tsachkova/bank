@@ -34,17 +34,11 @@ class Client {
                 throw new Error("exceeded credit limit");
             }
 
-            let creditMoney = (((account.sum - account.limit) > 0) && (account.limit)) || (account.limit - account.sum);
+            let creditMoney = (((account.sum - account.limit) > 0) && (account.limit)) || ( account.sum);
             let ownMoney = account.sum - account.limit;
 
-            // if(ownMoney >= 0) {
-            //     creditMoney = account.limit;
-            // } else {                   
-            //     creditMoney = account.limit + ownMoney;
-            // }
-
             this.credit.push(new CreditAccount(ownMoney, creditMoney, account.limit, account.currency, account.isActive, account.dateActive));
-        
+
         } else {
             if (account.sum < 0) {
                 throw new Error("debit account must be greater than zero");
@@ -68,7 +62,14 @@ function createNewClient(firstName, lastName, isActive, date, ...rest) {
     bank.push(newClient);
 }
 
-function rate(sum, currencyAccount, currencyRate ) {
+let acc1 = {sum : 120, currency: 'UAH', isActive: true, dateActive: '11.03.2012'};
+let acc2 = {sum : 240, limit: 100, currency: 'UAH', isActive: true, dateActive: '11.03.2012'};
+let acc3 = {sum : 120, currency: 'UAH', isActive: true, dateActive: '11.03.2012'};
+let acc4 = {sum : 115, limit: 120, currency: 'UAH', isActive: true, dateActive: '11.03.2012'};
+
+createNewClient('vasys', 'pupkin', true, '10.5.2001', acc1, acc2, acc3, acc4);
+
+function convertMoney(sum, currencyAccount, currencyRate, requiredСurrency ) {
 
     if((sum > 0) && (currencyAccount === 'USD')){
         return sum;
@@ -93,25 +94,25 @@ function rate(sum, currencyAccount, currencyRate ) {
     return 0;
 }
 
-function calculatSumBankUsd(rate, callback){    
+function calculatSumBankUsd(rate, requiredСurrency, callback){    
     let sumBankUsd = 0;
 
     for(let i = 0; i < bank.length; i++){
 
         for(let j = 0; j < bank[i].credit.length; j++) {
-            sumBankUsd += callback(bank[i].credit[j].ownMoney, bank[i].credit[j].currency, rate);
-            sumBankUsd += callback(bank[i].credit[j].creditMoney, bank[i].credit[j].currency, rate);
+            sumBankUsd += callback(bank[i].credit[j].ownMoney, bank[i].credit[j].currency, rate, requiredСurrency);
+            sumBankUsd += callback(bank[i].credit[j].creditMoney, bank[i].credit[j].currency, rate, requiredСurrency);
         }
 
         for(let k = 0; k < bank[i].debit.length; k++) {
-            sumBankUsd += callback(bank[i].debit[k].ownMoney, bank[i].debit[k].currency, rate);
+            sumBankUsd += callback(bank[i].debit[k].ownMoney, bank[i].debit[k].currency, rate, requiredСurrency);
         }
     }
 
     return sumBankUsd;
 }
 
-function calculatDebtActiveUsd(rate, callback) {
+function calculatDebtActiveUsd(rate, requiredСurrency, callback) {
     let  debtActiveUsd = 0;
 
     for(let i = 0; i < bank.length; i++) {
@@ -119,7 +120,7 @@ function calculatDebtActiveUsd(rate, callback) {
         if(bank[i].isActive) {
             for(let j = 0; j < bank[i].credit.length; j++) {
                 if(bank[i].credit[j].ownMoney < 0) {
-                    debtActiveUsd += callback(Math.abs(bank[i].credit[j].ownMoney), bank[i].credit[j].currency, rate);
+                    debtActiveUsd += callback(Math.abs(bank[i].credit[j].ownMoney), bank[i].credit[j].currency, rate, requiredСurrency);
                 }
             }
         }
@@ -128,7 +129,7 @@ function calculatDebtActiveUsd(rate, callback) {
     return debtActiveUsd;
 }
 
-function calculatDebtNotActiveUsd(rate, callback) {
+function calculatDebtNotActiveUsd(rate, requiredСurrency, callback) {
     let  debtNotActiveUsd = 0;
 
     for(let i = 0; i < bank.length; i++) {
@@ -137,7 +138,7 @@ function calculatDebtNotActiveUsd(rate, callback) {
             for(let j = 0; j < bank[i].credit.length; j++) {
 
                 if(bank[i].credit[j].ownMoney < 0) {
-                    debtNotActiveUsd += callback(Math.abs(bank[i].credit[j].ownMoney), bank[i].credit[j].currency, rate);
+                    debtNotActiveUsd += callback(Math.abs(bank[i].credit[j].ownMoney), bank[i].credit[j].currency, rate, requiredСurrency);
                 }
             }
         }
@@ -146,11 +147,11 @@ function calculatDebtNotActiveUsd(rate, callback) {
 }
 
 
-async function toCalculateBankMoney(callback) {
+async function toCalculateBankMoney(requiredСurrency, callback) {
     let currenRequest = (await fetch('https://api.privatbank.ua/p24api/pubinfo?json&exchange&coursid=5')).json();
-    currenRequest.then(requestResult => calculatSumBankUsd(requestResult, callback))
-    currenRequest.then((requestResult) => calculatDebtActiveUsd(requestResult, callback))
-    currenRequest.then((requestResult) => calculatDebtNotActiveUsd(requestResult, callback))
+    currenRequest.then(requestResult => calculatSumBankUsd(requestResult, requiredСurrency, callback))
+    currenRequest.then((requestResult) => calculatDebtActiveUsd(requestResult, requiredСurrency, callback))
+    currenRequest.then((requestResult) => calculatDebtNotActiveUsd(requestResult, requiredСurrency, callback))
 }
 
-toCalculateBankMoney(rate);
+toCalculateBankMoney('usd', convertMoney);
