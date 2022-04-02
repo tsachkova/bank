@@ -34,23 +34,23 @@ class Client {
                 throw new Error("exceeded credit limit");
             }
 
-            let creditMoney;
+            let creditMoney = (((account.sum - account.limit) > 0) && (account.limit)) || (account.limit - account.sum);
             let ownMoney = account.sum - account.limit;
 
-            if(ownMoney >= 0) {
-                creditMoney = account.limit;
-            } else {                   
-                creditMoney = account.limit + ownMoney;
-            }
+            // if(ownMoney >= 0) {
+            //     creditMoney = account.limit;
+            // } else {                   
+            //     creditMoney = account.limit + ownMoney;
+            // }
 
-            this.credit.push(new CreditAccount(ownMoney, creditMoney, account.limit, account.currency, account.isActive, account.dateActive))
+            this.credit.push(new CreditAccount(ownMoney, creditMoney, account.limit, account.currency, account.isActive, account.dateActive));
         
         } else {
             if (account.sum < 0) {
                 throw new Error("debit account must be greater than zero");
             }
 
-            this.debit.push(new DebitAccount(account.sum, account.currency, account.isActive, account.dateActive))
+            this.debit.push(new DebitAccount(account.sum, account.currency, account.isActive, account.dateActive));
         }
     }
 }
@@ -146,11 +146,11 @@ function calculatDebtNotActiveUsd(rate, callback) {
 }
 
 
-async function currency(callback) {
+async function toCalculateBankMoney(callback) {
     let currenRequest = (await fetch('https://api.privatbank.ua/p24api/pubinfo?json&exchange&coursid=5')).json();
     currenRequest.then(requestResult => calculatSumBankUsd(requestResult, callback))
     currenRequest.then((requestResult) => calculatDebtActiveUsd(requestResult, callback))
     currenRequest.then((requestResult) => calculatDebtNotActiveUsd(requestResult, callback))
 }
 
-currency(rate);
+toCalculateBankMoney(rate);
