@@ -62,13 +62,6 @@ function createNewClient(firstName, lastName, isActive, date, ...rest) {
     bank.push(newClient);
 }
 
-let acc1 = {sum : 120, currency: 'USD', isActive: true, dateActive: '11.03.2012'};
-let acc2 = {sum : 240, limit: 100, currency: 'UAH', isActive: true, dateActive: '11.03.2012'};
-let acc3 = {sum : 120, currency: 'EUR', isActive: true, dateActive: '11.03.2012'};
-let acc4 = {sum : 15, limit: 120, currency: 'UAH', isActive: true, dateActive: '11.03.2012'};
-
-createNewClient('vasys', 'pupkin', true, '10.5.2001', acc1, acc2, acc3, acc4);
-
 function convertMoney(sum, currencyAccount, currencyRate, requiredCurrency ) {
     if ((typeof requiredCurrency !== 'string') && (requiredCurrency.length !== 3)) {
         throw new Error("invalid currency type format");
@@ -81,18 +74,22 @@ function convertMoney(sum, currencyAccount, currencyRate, requiredCurrency ) {
         }
     }
 
+    if(requiredCurrencyRate === undefined) {
+        throw new Error("this type of currency is not found");
+    }
+
     if((sum > 0) && (currencyAccount === requiredCurrency)) {
         return sum;
     }
 
-    if((sum > 0) && (currencyAccount === 'UAH')){
+    if((sum > 0) && (currencyAccount === 'UAH')) {
         return sum / requiredCurrencyRate.sale;
     }
 
     if(sum > 0) {
         let uah = 0;
 
-        for(i = 0; i < currencyRate.length; i++){
+        for(i = 0; i < currencyRate.length; i++) {
             if(currencyAccount === i.ccy) {
                 uah = sum * currencyRate[i].buy;
             }
@@ -104,7 +101,7 @@ function convertMoney(sum, currencyAccount, currencyRate, requiredCurrency ) {
     return 0;
 }
 
-function calculatSumBank(rate, requiredCurrency, callback){    
+function calculatSumBank(rate, requiredCurrency, callback) {    
     let sumBankUsd = 0;
 
     for(let i = 0; i < bank.length; i++){
@@ -118,7 +115,7 @@ function calculatSumBank(rate, requiredCurrency, callback){
             sumBankUsd += callback(bank[i].debit[k].ownMoney, bank[i].debit[k].currency, rate, requiredCurrency);
         }
     }
-    console.log(sumBankUsd)
+   
     return sumBankUsd;
 }
 
@@ -135,7 +132,7 @@ function calculatDebtActive(rate, requiredCurrency, callback) {
             }
         }
     }
-    console.log(debtActiveUsd)
+   
     return debtActiveUsd;
 }
 
@@ -153,7 +150,7 @@ function calculatDebtNotActive(rate, requiredCurrency, callback) {
             }
         }
     }
-    console.log(debtNotActiveUsd)
+    
     return debtNotActiveUsd;
 }
 
@@ -164,9 +161,3 @@ async function toCalculateBankMoney(requiredCurrency, callback) {
     currenRequest.then((requestResult) => calculatDebtActive(requestResult, requiredCurrency, callback))
     currenRequest.then((requestResult) => calculatDebtNotActive(requestResult, requiredCurrency, callback))
 }
-
-toCalculateBankMoney('EUR', convertMoney);
-
-// 0:[ {ccy: 'USD', base_ccy: 'UAH', buy: '29.25490', sale: '29.54740'}
-// 1: {ccy: 'EUR', base_ccy: 'UAH', buy: '32.15000', sale: '32.75000'}
-// 2: {ccy: 'BTC', base_ccy: 'USD', buy: '44362.3654', sale: '49032.0880'}]
