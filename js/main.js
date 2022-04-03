@@ -53,9 +53,8 @@ let bank = [];
 
 function createNewClient(firstName, lastName, isActive, date, ...rest) {
     let newClient = new Client(firstName, lastName, isActive, date);
-    let clientArgs = arguments;
-
-    for(let i = 4; i < clientArgs.length; i++) {
+    
+    for(let i = createNewClient.length; i < arguments.length; i++) {
         newClient.addAccount(clientArgs[i]);
     }
 
@@ -68,13 +67,14 @@ function convertMoney(sum, currencyAccount, currencyRate, requiredCurrency ) {
     }
 
     let requiredCurrencyRate;
+    
     for(i = 0; i < currencyRate.length; i++){
         if(requiredCurrency === currencyRate[i].ccy) {
             requiredCurrencyRate = currencyRate[i];
         }
     }
 
-    if(requiredCurrencyRate === undefined) {
+    if((requiredCurrencyRate === undefined) && (requiredCurrency !== 'UAH')) {
         throw new Error("this type of currency is not found");
     }
 
@@ -115,7 +115,7 @@ function calculatSumBank(rate, requiredCurrency, callback) {
             sumBankUsd += callback(bank[i].debit[k].ownMoney, bank[i].debit[k].currency, rate, requiredCurrency);
         }
     }
-   
+    console.log(sumBankUsd);
     return sumBankUsd;
 }
 
@@ -132,7 +132,7 @@ function calculatDebtActive(rate, requiredCurrency, callback) {
             }
         }
     }
-   
+    console.log(debtActiveUsd);
     return debtActiveUsd;
 }
 
@@ -150,7 +150,7 @@ function calculatDebtNotActive(rate, requiredCurrency, callback) {
             }
         }
     }
-    
+    console.log(debtNotActiveUsd);
     return debtNotActiveUsd;
 }
 
