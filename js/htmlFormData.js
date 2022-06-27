@@ -1,5 +1,3 @@
-
-
 let startHtmlData = [
     {
         element: 'input',
@@ -107,6 +105,7 @@ let createUserDate = [
         value: "добавить кредитовый счет",
         id: "creditAccount",
     },
+
     {
         p: true,
         element: 'input',
@@ -122,58 +121,54 @@ let createUserDate = [
         id: 'back',
         value: "  Отмена  "
     },
-    
 ]
 
-
 let debitDataHtml = [
-            {
-                p: true,
-                element:'label',
-                for: "ownSum",
-                textContent: 'сумма на счету',
-                nextElement: {
-                    element:'input',
-                    type: 'text',
-                    className: "ownSum",
-                    placeholder: "0"
-                }
-            },
+    {
+        p: true,
+        element:'label',
+        for: "ownSum",
+        textContent: 'сумма на счету',
+        nextElement: {
+            element:'input',
+            type: 'text',
+            className: "ownSum",
+            placeholder: "0"
+        }
+    },
     
-            {
-                p: true,
-                element:'label',
-                for: "isActive",
-                textContent: 'счет активен',
-                nextElement: {
-                    element:'input',
-                    type: "checkbox",
-                    className: "isActive",
-                }
-            },
+    {
+        p: true,
+         element:'label',
+        for: "isActive",
+        textContent: 'счет активен',
+        nextElement: {
+            element:'input',
+            type: "checkbox",
+            className: "isActive",
+        }
+    },
     
-            {
-                p: true,
-                element:'label',
-                for: "currency",
-                textContent: 'валюта счета',
-                nextElement: {
-                    element:'select',
-                    className: "currency",
-                    size: '1'
-                }
-            },
+    {
+        p: true,
+        element:'label',
+        for: "currency",
+        textContent: 'валюта счета',
+        nextElement: {
+            element:'select',
+            className: "currency",
+            size: '1'
+        }
+    },
     
-            {
-                p: true,
-                element:'input',
-                type: "button",
-                className: "deleteAccount",
-                value: "удалить"
-            },
-
-            
-        ];
+    {
+        p: true,
+        element:'input',
+        type: "button",
+        className: "deleteAccount",
+        value: "удалить"
+    },
+];
 
 
 
@@ -213,7 +208,6 @@ let searchDataHtml = [
 ];
 
 let editUserData = [
-
     {   
         element:'p',
         textContent: 'ID клиента - ',

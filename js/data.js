@@ -1,3 +1,5 @@
+let bank = [];
+
 class CreditAccount {
     constructor(ownMoney, creditMoney, limit, currency, isActive, dateActive) {
         this.currency = currency;
@@ -51,7 +53,7 @@ class Client {
     }
 }
 
-let bank = [];
+
 
 function createNewClient(creatData) {
     

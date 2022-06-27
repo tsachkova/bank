@@ -64,18 +64,9 @@ function listiners() {
         }
     })
     document.body.addEventListener('focusout', function (event) {
-        checkValueFormat(event) 
+        validateNameFormat(event) 
     });
 
 
 }
 
-function checkValueFormat(event) {
-    if (event.target.classList.contains("ownSum") || event.target.classList.contains("limit")) {
-
-        if (!/^\d+$/.test(event.target.value) && !(event.target.value.length === 0)) {
-            alert("Поля 'сумма на счету' и 'кредитный лимит' должны содержать только цифры");
-            event.target.value = '';
-        }
-    }
-}
