@@ -1,140 +1,155 @@
-function putEditedClientData(editedClient) {   
-    if (!editedClient) {
-        alert('в базе нет клиента с таким id');
-        clearParents(document.querySelector('#mainForm'));
-        addHtmlFragment(startParents, startHtmlData, startFormCallback);
-        return;
+class GetPutClientData {
+    constructor(clientData) {
+        this.clientData = clientData;
     }
 
-    editedAccountsForm(editedClient.debet, document.getElementById('debet'));
-    editedAccountsForm(editedClient.credit, document.getElementById('credit'));
-    let debitAccountForms = document.getElementById('debet').querySelectorAll('fieldset');
-    let creditAccountForms = document.getElementById('credit').querySelectorAll('fieldset');
-    putAccountsData(editedClient.debet, debitAccountForms)
-    putAccountsData(editedClient.credit, creditAccountForms)
-    document.getElementById('firstName').value = editedClient.firstName;
-    document.getElementById('lastName').value = editedClient.lastName;
+    putEditedClientData() {
+        if (!this.clientData) {
+            alert('в базе нет клиента с таким id');
+            returnStartForm();
+            return;
+        }
 
-    if (editedClient.isActive) {
-        document.getElementById('isActive').setAttribute('checked', `checked`);
+        document.getElementById('firstName').value = this.clientData.firstName;
+        document.getElementById('lastName').value = this.clientData.lastName;
+
+        if (this.clientData.isActive) {
+            document.getElementById('isActive').setAttribute('checked', `checked`);
+        }
+
+        document.getElementById('idEditClient').setAttribute('data-idInfo', `${this.clientData.id}`);
+        document.getElementById('idEditClient').textContent += `${this.clientData.id}`;
+        document.getElementById('dateEditClient').setAttribute('data-dateInfo', `${this.clientData.date}`);
+        document.getElementById('dateEditClient').textContent += `${this.clientData.date}`;
+
+        let debetAccountForms = document.getElementById('debet');
+
+        for (let i = 0; i < this.clientData.debet.length; i++) {
+            new Accounts(this.clientData.debet[i], debetAccountForms).generateAccountsForm().putAccountsData();
+        }
+
+        let creditAccountForms = document.getElementById('credit');
+
+        for (let i = 0; i < this.clientData.credit.length; i++) {
+            new Accounts(this.clientData.credit[i], creditAccountForms).generateAccountsForm().putAccountsData();
+        }
     }
 
-    document.getElementById('idEditClient').setAttribute('data-idInfo', `${editedClient.id}`);
-    document.getElementById('idEditClient').textContent += `${editedClient.id}`;
-    document.getElementById('dateEditClient').setAttribute('data-dateInfo', `${editedClient.date}`);
-    document.getElementById('dateEditClient').textContent += `${editedClient.date}`;
+    getClientData() {
+        let newClientData = {};
+
+        newClientData.firstName = document.getElementById('firstName').value;
+        newClientData.lastName = document.getElementById('lastName').value;
+
+        if (!(newClientData.firstName && newClientData.lastName)) {
+            alert('введите имя и фамилию');
+            document.getElementById('firstName').value = '';
+            document.getElementById('lastName').value = '';
+            return;
+        }
+
+        newClientData.isActive = document.getElementById('isActive').checked;
+
+        if (document.getElementById('dateEditClient')) {
+            newClientData.date = document.getElementById('dateEditClient').getAttribute('data-dateinfo');
+        } else {
+            newClientData.date = new Date().toString().match(/[A-Za-z]{3}\s\d\d\s\d{4}/)[0];
+        }
+
+        newClientData.id = 1;
+        if (!document.getElementById('idEditClient')) {
+            for (let i = 0; i < bank.length; i++) {
+
+                if (newClientData.id <= bank[i].id) {
+                    newClientData.id = parseInt(bank[i].id) + 1;
+                }
+            }
+        } else {
+            newClientData.id = Number(document.getElementById('idEditClient').getAttribute('data-idInfo'));
+
+        }
+
+        let accountsDebet = document.getElementById('debet').getElementsByTagName('fieldset');
+        let accountsCredit = document.getElementById('credit').getElementsByTagName('fieldset');
+        newClientData.accounts = [];
+        for (let i = 0; i < accountsDebet.length; i++) {
+            newClientData.accounts.push(new Accounts(accountsDebet[i],).getAccountsData());
+        }
+        for (let i = 0; i < accountsCredit.length; i++) {
+            newClientData.accounts.push(new Accounts(accountsCredit[i]).getAccountsData());
+        }
+
+        return newClientData;
+
+    }
+
+    deleteOldUserData() {
+        if (document.getElementById('idEditClient')) {
+            deleteUser(Number(document.getElementById('idEditClient').getAttribute('data-idinfo')));
+        }
+        return this;
+    }
 }
 
-function editedAccountsForm(accountsArray, carrentAccountField) {
-    for (let i = 0; i < accountsArray.length; i++) { 
-        if (accountsArray[i].limit || accountsArray[i].limit === 0){
-        addHtmlFragment(carrentAccountField, debitDataHtml, creditAccountFormCallback);
-        } else {
-            addHtmlFragment(carrentAccountField, debitDataHtml, debetAccountFormCallback);
-        }
+class Accounts {
+    constructor(accountData, accountContainer,) {
+        this.accountData = accountData;
+        this.accountsContainer = accountContainer;
     }
-}
 
-function putAccountsData(accountsArray, accountsFormArrey) {
-    for (let i = 0; i < accountsArray.length; i++) {
-        
-        if (accountsArray[i].limit || accountsArray[i].limit === 0) {
-            accountsFormArrey[i].querySelector('.limit').value = accountsArray[i].limit;
-            accountsFormArrey[i].querySelector('.ownSum').value = accountsArray[i].limit + accountsArray[i].ownMoney;
+    generateAccountsForm() {
+        if (this.accountData.limit || this.accountData.limit === 0) {
+            new addHtmlForm(this.accountsContainer, debitDataHtml, creditAccountFormCallback).createFragment().addFragment();
         } else {
-            accountsFormArrey[i].querySelector('.ownSum').value = accountsArray[i].ownMoney;
+            new addHtmlForm(this.accountsContainer, debitDataHtml).createFragment().addFragment();
+        }
+        return this;
+    }
+
+    putAccountsData() {
+        let carrentAccountContainer = this.accountsContainer.lastChild;
+        if (this.accountData.limit || this.accountData.limit === 0) {
+            carrentAccountContainer.querySelector('.limit').value = this.accountData.limit;
+            carrentAccountContainer.querySelector('.ownSum').value = this.accountData.limit + this.accountData.ownMoney;
+        } else {
+            carrentAccountContainer.querySelector('.ownSum').value = this.accountData.ownMoney;
         }
 
-        if (accountsArray[i].isActive) {
-            accountsFormArrey[i].querySelector('.isActive').setAttribute('checked', `checked`);
+        if (this.accountData.isActive) {
+            carrentAccountContainer.querySelector('.isActive').setAttribute('checked', `checked`);
         }
 
-        accountsFormArrey[i].querySelector('.currencyContainer').innerHTML = `
-        <p><label for="currency" >валюта счета</label>
-        <select class = "currency" size="1">
-            <option selected  value= ${accountsArray[i].currency}>${accountsArray[i].currency}</option>
-        </select></p>`
+        carrentAccountContainer.querySelector('.currency').closest('p').innerHTML = `
+            <p><label for="currency" >валюта счета</label>
+            <select class = "currency" size="1">
+                <option selected  value= ${this.accountData.currency}>${this.accountData.currency}</option>
+            </select></p>`;
+
+    }
+
+    getAccountsData() {
+        let accountData = {};
+
+        accountData.currency = this.accountData.querySelector('.currency').value;
+        accountData.sum = (+this.accountData.querySelector('.ownSum').value) || 0;
+        accountData.isActive = this.accountData.querySelector('.isActive').checked;
+        accountData.dateActive = new Date();
+
+        if (this.accountData.querySelector('.limit')) {
+            accountData.limit = (+this.accountData.querySelector('.limit').value) || 0;
+        }
+
+        return accountData;
     }
 }
 
 function putCalculateData(calculateData, calculateCarrency) {
-    let fieldArrey = document.querySelector('fieldset').querySelectorAll ('input');
-    for(let i = 0; i < fieldArrey.length; i++) {
-        if(fieldArrey[i].type === 'text') {
-            fieldArrey[i].previousSibling.textContent+= calculateCarrency;
-            fieldArrey[i].value = calculateData[fieldArrey[i].id]
-           }
-            
-            
+    let fieldArrey = document.querySelector('fieldset').querySelectorAll('input');
+    for (let i = 0; i < fieldArrey.length; i++) {
 
-    }
-        
-}
-
-function getAccountsData(accounts) {
-    let accountsData = [];
-       
-    for (let i = 0; i < accounts.length; i++) {
-        let accountData = {};
-        accountData.currency = accounts[i].querySelector('.currency').value;
-        accountData.sum = (+accounts[i].querySelector('.ownSum').value) || 0;
-        
-        accountData.isActive = accounts[i].querySelector('.isActive').checked;
-        accountData.dateActive = new Date();
-
-        if (accounts[i].querySelector('.limit')) {
-            accountData.limit = (+accounts[i].querySelector('.limit').value) || 0;
-        }
-        accountsData.push(accountData)
-    }
-    
-    return accountsData;
-}
-
-function getEditClientData() {
-    let newClientData = {};
-    newClientData.firstName = document.getElementById('firstName').value;
-    newClientData.lastName = document.getElementById('lastName').value;
-
-    if (!(newClientData.firstName && newClientData.lastName)) {
-        alert('введите имя и фамилию');
-        addHtmlFragment(document.querySelector('#mainForm'), mainUserForm, createFormCallback);
-        return;
-    }
-
-    newClientData.isActive = document.getElementById('isActive').checked;
-    if(document.getElementById('dateEditClient')){
-        newClientData.date = document.getElementById('dateEditClient').getAttribute('data-dateinfo')
-    } else {
-        newClientData.date = new Date().toString().match(/[A-Za-z]{3}\s\d\d\s\d{4}/)[0];
-    } 
-
-    newClientData.id = 1;
-    if (!document.getElementById('idEditClient')) {
-        for (let i = 0; i < bank.length; i++) {
-            if (newClientData.id <= bank[i].id) {
-                newClientData.id = parseInt(bank[i].id) + 1;
-            }
-        }
-    } else {
-        newClientData.id = document.getElementById('idEditClient').getAttribute('data-idInfo');
-    }
-
-    let accountsDebit = document.getElementById('debet').getElementsByTagName('fieldset');
-    let accountsCredit = document.getElementById('credit').getElementsByTagName('fieldset');
-   
-    let accounts = getAccountsData(accountsDebit).concat(getAccountsData(accountsCredit));
-    
-    newClientData.accounts = accounts;
-    return newClientData;
-}
-
-function validateNameFormat(event) {
-    if (event.target.classList.contains("ownSum") || event.target.classList.contains("limit")) {
-
-        if (!/^\d+$/.test(event.target.value) && !(event.target.value.length === 0)) {
-            alert("Поля 'сумма на счету' и 'кредитный лимит' должны содержать только цифры");
-            event.target.value = '';
+        if (fieldArrey[i].type === 'text') {
+            fieldArrey[i].previousSibling.textContent += calculateCarrency;
+            fieldArrey[i].value = calculateData[fieldArrey[i].id];
         }
     }
 }

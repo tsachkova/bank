@@ -32,49 +32,46 @@ class Client {
     }
 
     addAccount(accounts) {
-        for(let i = 0; i < accounts.length; i++) {
-        if (accounts[i].hasOwnProperty('limit')) {
-            if (accounts[i].sum < 0) {
-                throw new Error("exceeded credit limit");
+        for (let i = 0; i < accounts.length; i++) {
+            if (accounts[i].hasOwnProperty('limit')) {
+                if (accounts[i].sum < 0) {
+                    throw new Error("exceeded credit limit");
+                }
+
+                let creditMoney = (accounts[i].sum - accounts[i].limit) > 0 && accounts[i].limit || accounts[i].sum;
+                let ownMoney = accounts[i].sum - accounts[i].limit;
+
+                this.credit.push(new CreditAccount(ownMoney, creditMoney, accounts[i].limit, accounts[i].currency, accounts[i].isActive, accounts[i].dateActive));
+            } else {
+                if (accounts[i].sum < 0) {
+                    throw new Error("debet account must be greater than zero");
+                }
+
+                this.debet.push(new DebitAccount(accounts[i].sum, accounts[i].currency, accounts[i].isActive, accounts[i].dateActive));
             }
-
-            let creditMoney = (accounts[i].sum - accounts[i].limit) > 0 && accounts[i].limit || accounts[i].sum;
-            let ownMoney = accounts[i].sum - accounts[i].limit;
-
-            this.credit.push(new CreditAccount(ownMoney, creditMoney, accounts[i].limit, accounts[i].currency, accounts[i].isActive, accounts[i].dateActive));
-        } else {
-            if (accounts[i].sum < 0) {
-                throw new Error("debet account must be greater than zero");
-            }
-
-            this.debet.push(new DebitAccount(accounts[i].sum, accounts[i].currency, accounts[i].isActive, accounts[i].dateActive));
         }
-        }
+        return this;
     }
 }
 
-
-
-function createNewClient(creatData) {
-    
-
-    let newClient = new Client(creatData.firstName, creatData.lastName, creatData.isActive, creatData.date, creatData.id);
-    
-    newClient.addAccount(creatData.accounts)
-    
-    bank.push(newClient);
-
-   
-}
-
-function getDataSearchUser(idClient) {
+function getSearchUserData(idClient) {
     for (let i = 0; i < bank.length; i++) {
-        if (bank[i].id == idClient) {
+
+        if (bank[i].id === Number(idClient)) {
             let searchUser = bank[i];
-            bank.splice(i, 1);
             return searchUser;
         }
-
     }
     return;
+}
+
+function deleteUser(idDeleteUser) {
+    for (let i = 0; i < bank.length; i++) {
+
+        if (bank[i].id === Number(idDeleteUser)) {
+            bank.splice(i, 1);
+            return;
+        }
+    }
+    alert('Нет клиента с таким ID')
 }

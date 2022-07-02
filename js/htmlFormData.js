@@ -8,7 +8,7 @@ let startHtmlData = [
     },
 
     {
-        element:'input',
+        element: 'input',
         type: 'button',
         value: 'изменить данные пользователя',
         id: "editUser",
@@ -16,7 +16,7 @@ let startHtmlData = [
     },
 
     {
-        element:'input',
+        element: 'input',
         type: 'button',
         value: 'удалить пользователя',
         id: "deleteUser",
@@ -32,11 +32,11 @@ let startHtmlData = [
     },
 
     {
-        element:'label',
+        element: 'label',
         for: "calculateCurrency",
         textContent: 'рассчетная валюта  ',
         nextElement: {
-            element:'select',
+            element: 'select',
             id: "calculateCurrency",
             size: '1'
         },
@@ -46,11 +46,11 @@ let startHtmlData = [
 let createUserDate = [
     {
         p: true,
-        element:'label',
+        element: 'label',
         for: "firstName",
         textContent: 'Имя ',
         nextElement: {
-            element:'input',
+            element: 'input',
             type: 'text',
             id: "firstName",
             name: "firstName"
@@ -59,11 +59,11 @@ let createUserDate = [
 
     {
         p: true,
-        element:'label',
+        element: 'label',
         for: "lastName",
         textContent: 'Фамилия ',
         nextElement: {
-            element:'input',
+            element: 'input',
             type: 'text',
             id: "lastName",
             name: "lastName"
@@ -72,35 +72,35 @@ let createUserDate = [
 
     {
         p: true,
-        element:'label',
+        element: 'label',
         for: "isActive",
         textContent: 'Активность аккаунта',
         nextElement: {
-            element:'input',
+            element: 'input',
             type: 'checkbox',
             id: "isActive",
         }
     },
 
     {
-        element:'fieldset',
+        element: 'fieldset',
         id: 'debet',
     },
 
     {
-        element:'fieldset',
+        element: 'fieldset',
         id: 'credit',
     },
 
     {
-        element:'input',
+        element: 'input',
         type: 'button',
         value: "добавить дебитовый счет",
         id: "debitAccount",
     },
 
     {
-        element:'input',
+        element: 'input',
         type: 'button',
         value: "добавить кредитовый счет",
         id: "creditAccount",
@@ -121,49 +121,49 @@ let createUserDate = [
         id: 'back',
         value: "  Отмена  "
     },
-]
+];
 
 let debitDataHtml = [
     {
         p: true,
-        element:'label',
+        element: 'label',
         for: "ownSum",
         textContent: 'сумма на счету',
         nextElement: {
-            element:'input',
+            element: 'input',
             type: 'text',
             className: "ownSum",
             placeholder: "0"
         }
     },
-    
+
     {
         p: true,
-         element:'label',
+        element: 'label',
         for: "isActive",
         textContent: 'счет активен',
         nextElement: {
-            element:'input',
+            element: 'input',
             type: "checkbox",
             className: "isActive",
         }
     },
-    
+
     {
         p: true,
-        element:'label',
+        element: 'label',
         for: "currency",
         textContent: 'валюта счета',
         nextElement: {
-            element:'select',
+            element: 'select',
             className: "currency",
             size: '1'
         }
     },
-    
+
     {
         p: true,
-        element:'input',
+        element: 'input',
         type: "button",
         className: "deleteAccount",
         value: "удалить"
@@ -174,13 +174,13 @@ let debitDataHtml = [
 
 let searchDataHtml = [
     {
-        element:'legend',
+        element: 'legend',
         textContent: 'Изменение данных'
     },
-    
+
     {
         p: true,
-        element:'label',
+        element: 'label',
         for: "id",
         textContent: 'id',
         nextElement: {
@@ -189,7 +189,7 @@ let searchDataHtml = [
             id: "id",
         }
     },
-    
+
     {
         p: true,
         element: 'input',
@@ -197,40 +197,40 @@ let searchDataHtml = [
         id: 'search',
         value: "Искать"
     },
-    
+
     {
         p: true,
         element: 'input',
-         type: "button",
-        className: 'back',
+        type: "button",
+        id: 'back',
         value: "Назад"
     },
 ];
 
 let editUserData = [
-    {   
-        element:'p',
+    {
+        element: 'p',
         textContent: 'ID клиента - ',
         id: "idEditClient"
     },
 
-    {   
-        element:'p',
+    {
+        element: 'p',
         textContent: 'Дата регистрации - ',
         id: "dateEditClient"
     },
-]
+];
 
-editUserDateHtml =  editUserData.concat(createUserDate);
+editUserDateHtml = editUserData.concat(createUserDate);
 
 let calculateFormData = [
     {
         p: true,
-        element:'label',
+        element: 'label',
         for: "allBankSum",
         textContent: `сумма средств по банку в `,
         nextElement: {
-            element:'input',
+            element: 'input',
             type: 'text',
             id: "allBankSum",
             name: "allBankSum"
@@ -239,11 +239,11 @@ let calculateFormData = [
 
     {
         p: true,
-        element:'label',
+        element: 'label',
         for: "sumDebtActive",
         textContent: `сумма задолженности активных клиентов по банку в `,
         nextElement: {
-            element:'input',
+            element: 'input',
             type: 'text',
             id: "sumDebtActive",
             name: "sumDebtActive"
@@ -252,11 +252,11 @@ let calculateFormData = [
 
     {
         p: true,
-        element:'label',
+        element: 'label',
         for: "countDebtActiveUser",
         textContent: `количество активных клиентов - должников `,
         nextElement: {
-            element:'input',
+            element: 'input',
             type: 'text',
             id: "countDebtActiveUser",
             name: "countDebtActiveUser"
@@ -265,11 +265,11 @@ let calculateFormData = [
 
     {
         p: true,
-        element:'label',
+        element: 'label',
         for: "sumDebtNotActive",
         textContent: `сумма задолженности неактивных клиентов по банку в  `,
         nextElement: {
-            element:'input',
+            element: 'input',
             type: 'text',
             id: "sumDebtNotActive",
             name: "sumDebtNotActive"
@@ -278,11 +278,11 @@ let calculateFormData = [
 
     {
         p: true,
-        element:'label',
+        element: 'label',
         for: "countNotActiveDebtor",
         textContent: `количество неактивных клиентов - должников `,
         nextElement: {
-            element:'input',
+            element: 'input',
             type: 'text',
             id: "countNotActiveDebtor",
             name: "countNotActiveDebtor"
@@ -291,11 +291,11 @@ let calculateFormData = [
 
     {
         p: true,
-        element:'label',
+        element: 'label',
         for: "allDebtSum",
         textContent: `сумма общей задолженности по банку в `,
         nextElement: {
-            element:'input',
+            element: 'input',
             type: 'text',
             id: "allDebtSum",
             name: "allDebtSum"
@@ -309,4 +309,4 @@ let calculateFormData = [
         id: 'back',
         value: "Назад"
     }
-]
+];

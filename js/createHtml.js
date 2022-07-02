@@ -1,99 +1,117 @@
-function createNewElement(parentElement, elementData) {
+class addHtmlForm {
 
-    let element =  document.createElement(elementData.element);
+    constructor(parent, dataHtml, callback) {
+        this.dataHtml = dataHtml;
+        this.parent = parent;
+        this.callback = callback;
 
-    if (elementData.name) {
-        element.name = elementData.name;
     }
 
-    if (elementData.id) {
-        element.id = elementData.id;
+    container = document.createElement('fieldset');
+    elementData;
+    elementParent;
+
+    createNewElement() {
+        let element = document.createElement(this.elementData.element);
+
+        if (this.elementData.name) {
+            element.name = this.elementData.name;
+        }
+
+        if (this.elementData.id) {
+            element.id = this.elementData.id;
+        }
+
+        if (this.elementData.className) {
+            element.setAttribute('class', `${this.elementData.className}`);
+        }
+
+        if (this.elementData.type) {
+            element.type = this.elementData.type;
+        }
+
+        if (this.elementData.value) {
+            element.value = this.elementData.value;
+        }
+
+        if (this.elementData.for) {
+            element.setAttribute('for', `${this.elementData.for}`);
+        }
+
+        if (this.elementData.size) {
+            element.setAttribute('size', `${this.elementData.size}`);
+        }
+
+        if (this.elementData.textContent) {
+            element.textContent = `${this.elementData.textContent}`;
+        }
+
+        if (this.elementData.placeholder) {
+            element.setAttribute('placeholder', `${this.elementData.placeholder}`);
+        }
+
+        this.elementParent.append(element);
+        return this;
     }
 
-    if (elementData.className) {
-        element.setAttribute('class', `${elementData.className}`);
-    }
+    createFragment() {
+        for (let i = 0; i < this.dataHtml.length; i++) {
+            this.elementData = this.dataHtml[i];
+            if (this.dataHtml[i].p) {
+                this.elementParent = document.createElement('p');
+                this.createNewElement();
 
-    if (elementData.type) {
-        element.type = elementData.type;
-    }
+                if (this.dataHtml[i].nextElement) {
+                    this.elementData = this.dataHtml[i].nextElement;
+                    this.createNewElement();
+                }
 
-    if (elementData.value) {
-        element.value = elementData.value;
-    }
+                this.container.append(this.elementParent);
 
-    if (elementData.for) {
-        element.setAttribute('for', `${elementData.for}`);
-    }
+            } else {
+                this.elementParent = this.container;
+                this.createNewElement();
 
-    if (elementData.size) {
-        element.setAttribute('size', `${elementData.size}`);
-    }
-
-    if (elementData.textContent) {
-        element.textContent = `${elementData.textContent}`;
-    }
-
-    if (elementData.placeholder) {
-        element.setAttribute('placeholder', `${elementData.placeholder}`);
-    }
-
-    parentElement.append(element);
-}
-
-function addHtml(dataHtml, container) {
-    let htmlContainer = container;
-    
-    
-    for (let i = 0; i < dataHtml.length; i++) {
-        if (dataHtml[i].p) {
-            let newP = document.createElement('p');
-            
-            createNewElement(newP, dataHtml[i]);
-
-            if (dataHtml[i].nextElement) {
-                createNewElement(newP, dataHtml[i].nextElement);
-            }
-
-            htmlContainer.append(newP);
-
-        } else {
-            createNewElement(htmlContainer, dataHtml[i]);
-
-            if (dataHtml[i].nextElement) {
-                createNewElement(htmlContainer, dataHtml[i].nextElement);
+                if (this.dataHtml[i].nextElement) {
+                    this.elementData = this.dataHtml[i].nextElement;
+                    this.createNewElement();
+                };
             }
         }
-    }
-    return htmlContainer;
-}
 
-function addSelectOption(parentSelect) {
-    let selectOption = document.createDocumentFragment();
-    let optionValues = ["UAH", "EUR", "USD"];
-
-    for (let i = 0; i < optionValues.length; i++) {
-        createNewElement(selectOption, { element:'option', value: optionValues[i]});
-        selectOption.lastChild.innerHTML = optionValues[i];
+        return this;
     }
 
-    parentSelect.append(selectOption);
-}
+    addFragment() {
+        if (this.callback) {
+            this.callback(this.container);
+        }
 
-
-function addHtmlFragment(parents, formData, callback) {
-    
-    let form = addHtml(formData, document.createElement('fieldset'));
-    
-    if(callback){
-    callback(form);
+        this.parent.append(this.container);
     }
-    parents.append(form);
-    
+
+    addSelectOption() {
+        let optionParent = this.container.querySelector('select');
+
+
+        let optionValues = ["UAH", "EUR", "USD"];
+
+        for (let i = 0; i < optionValues.length; i++) {
+            let options = document.createElement('option');
+            options.value = optionValues[i];
+            options.innerHTML = optionValues[i];;
+            optionParent.append(options);
+        }
+
+        return this;
+    }
 }
-
-
 
 function clearParents(parents) {
     parents.innerHTML = '';
+}
+
+function returnStartForm() {
+    clearParents(document.querySelector('#mainForm'));
+    new addHtmlForm(startParents, startHtmlData).createFragment().addSelectOption().addFragment();
 }

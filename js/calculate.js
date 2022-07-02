@@ -22,7 +22,7 @@ function convertMoney(sum, currencyAccount, currencyRate, requiredCurrency) {
             alert("this type of currency is not found");
             document.querySelector('body').innerHTML = '';
 
-            startHtml();
+            returnStartForm();
 
             throw new Error("this type of currency is not found");
         }
@@ -71,7 +71,7 @@ function calculatSumBank(rate, requiredCurrency, callback) {
         }
     }
 
-        calculateBankData['allBankSum'] = sumBankUsd;
+    calculateBankData['allBankSum'] = sumBankUsd;
 }
 
 function calculatDebtActive(rate, requiredCurrency, callback) {
@@ -130,4 +130,3 @@ async function toCalculateBankMoney(requiredCurrency, callback) {
     currenRequest.then(() => allDebt())
     currenRequest.then(() => putCalculateData(calculateBankData, requiredCurrency))
 }
-console.log('calc')
