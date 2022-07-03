@@ -7,6 +7,7 @@ listiners();
 
 function listiners() {
     document.body.addEventListener('click', function (event) {
+        event.preventDefault();
         if (event.target.id === "createUser") {
             clearParents(document.querySelector('#mainForm'));
             new addHtmlForm(document.querySelector('#mainForm'), createUserDate, createFormCallback).createFragment().addFragment();
@@ -68,6 +69,7 @@ function listiners() {
     })
 
     document.body.addEventListener('focusout', function (event) {
+        event.preventDefault();
         if (event.target.classList.contains("ownSum") || event.target.classList.contains("limit")) {
 
             if (!/^\d+$/.test(event.target.value) && !(event.target.value.length === 0)) {
