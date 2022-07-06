@@ -74,59 +74,53 @@ function calculatSumBank(rate, requiredCurrency, callback) {
     calculateBankData['allBankSum'] = sumBankUsd;
 }
 
-function calculatDebtActive(rate, requiredCurrency, callback) {
+function calculatDebt(rate, requiredCurrency, convertCallback, sumKey, countKey, callback) {
     let debtActiveUsd = 0;
     let countDebtActive = 0;
 
     for (let i = 0; i < bank.length; i++) {
+        if(callback) {
+            isCalculetData = callback(bank[i]);
+        } else {
+            isCalculetData = true;
+        }
 
-        if (bank[i].isActive) {
+        let count = 0;
+
+        if (isCalculetData) {
             for (let j = 0; j < bank[i].credit.length; j++) {
+                       
                 if (bank[i].credit[j].ownMoney < 0) {
-                    debtActiveUsd += callback(Math.abs(bank[i].credit[j].ownMoney), bank[i].credit[j].currency, rate, requiredCurrency);
-                    countDebtActive += 1;
+                    debtActiveUsd += convertCallback(Math.abs(bank[i].credit[j].ownMoney), bank[i].credit[j].currency, rate, requiredCurrency);
+                    count = count || 1;
                 }
+
             }
+            countDebtActive += count; 
         }
     }
-
-    calculateBankData['sumDebtActive'] = debtActiveUsd;
-    calculateBankData['countDebtActiveUser'] = countDebtActive;
-
-    return debtActiveUsd;
+    
+    calculateBankData[sumKey] = debtActiveUsd;
+    calculateBankData[countKey] = countDebtActive;
 }
 
-function calculatDebtNotActive(rate, requiredCurrency, callback) {
-    let debtNotActiveUsd = 0;
-    let countDebtNotActive = 0;
-    for (let i = 0; i < bank.length; i++) {
-
-        if (!bank[i].isActive) {
-            for (let j = 0; j < bank[i].credit.length; j++) {
-
-                if (bank[i].credit[j].ownMoney < 0) {
-                    debtNotActiveUsd += callback(Math.abs(bank[i].credit[j].ownMoney), bank[i].credit[j].currency, rate, requiredCurrency);
-                    countDebtNotActive += 1;
-                }
-            }
-        }
+function debtActive(clientData) {
+    if(clientData.isActive) {
+        return true
     }
-
-    calculateBankData['sumDebtNotActive'] = debtNotActiveUsd;
-    calculateBankData['countNotActiveDebtor'] = countDebtNotActive;
-
-    return debtNotActiveUsd;
 }
 
-function allDebt() {
-    calculateBankData.allDebtSum = calculateBankData.sumDebtActive + calculateBankData.sumDebtNotActive;
+function debtNotActive(clientData) {
+    if(!clientData.isActive) {
+        return true
+    }
 }
 
 async function toCalculateBankMoney(requiredCurrency, callback) {
     let currenRequest = (await fetch('https://api.privatbank.ua/p24api/pubinfo?json&exchange&coursid=5')).json();
     currenRequest.then(requestResult => calculatSumBank(requestResult, requiredCurrency, callback))
-    currenRequest.then((requestResult) => calculatDebtActive(requestResult, requiredCurrency, callback))
-    currenRequest.then((requestResult) => calculatDebtNotActive(requestResult, requiredCurrency, callback))
-    currenRequest.then(() => allDebt())
+    currenRequest.then((requestResult) => calculatDebt(requestResult, requiredCurrency, callback, 'sumDebtActive', 'countDebtActiveUser', debtActive))
+    currenRequest.then((requestResult) => calculatDebt(requestResult, requiredCurrency, callback, 'sumDebtNotActive', 'countNotActiveDebtor', debtNotActive))
+    currenRequest.then((requestResult) => calculatDebt(requestResult, requiredCurrency, callback, 'allDebtSum'))
     currenRequest.then(() => putCalculateData(calculateBankData, requiredCurrency))
 }

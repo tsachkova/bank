@@ -7,7 +7,7 @@ listiners();
 
 function listiners() {
     document.body.addEventListener('click', function (event) {
-        event.preventDefault();
+        
         if (event.target.id === "createUser") {
             clearParents(document.querySelector('#mainForm'));
             new addHtmlForm(document.querySelector('#mainForm'), createUserDate, createFormCallback).createFragment().addFragment();
@@ -85,4 +85,4 @@ function listiners() {
             }
         }
     });
-}
+ }
