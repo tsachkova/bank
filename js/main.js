@@ -14,7 +14,13 @@ function listiners() {
         }
 
         if (event.target.id === "submit") {
-            let newClientData = new GetPutClientData().deleteOldUserData().getClientData();
+            let newClientData;
+            if(editedClientGetPut) {
+                newClientData = editedClientGetPut.deleteOldUserData().getClientData();
+                editedClientGetPut = null; 
+            } else {
+            newClientData = new GetPutClientData().getClientData();
+            }
             if (!newClientData) {
                 return;
             }
@@ -43,7 +49,8 @@ function listiners() {
             let searchUserData = getSearchUserData(document.querySelector('#id').value);
             clearParents(document.querySelector('#mainForm'));
             new addHtmlForm(document.querySelector('#mainForm'), editUserDateHtml, editFormCallback).createFragment().addFragment();
-            new GetPutClientData(searchUserData).putEditedClientData();
+            editedClientGetPut = new GetPutClientData(searchUserData);
+            editedClientGetPut.putEditedClientData();
         }
 
         if (event.target.id === "back") {

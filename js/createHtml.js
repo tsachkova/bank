@@ -112,6 +112,9 @@ function clearParents(parents) {
 }
 
 function returnStartForm() {
+    if(editedClientGetPut) {
+        editedClientGetPut = null;
+    }
     clearParents(document.querySelector('#mainForm'));
     new addHtmlForm(startParents, startHtmlData).createFragment().addSelectOption().addFragment();
 }

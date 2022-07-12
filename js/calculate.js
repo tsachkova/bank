@@ -1,6 +1,6 @@
 let calculateBankData = {};
 
-function convertMoney(sum, currencyAccount, currencyRate, requiredCurrency) {
+function convertMoney(currencyRate, requiredCurrency, sum, currencyAccount) {
     if ((typeof requiredCurrency !== 'string') && (requiredCurrency.length !== 3)) {
         throw new Error("invalid currency type format");
     }
@@ -8,36 +8,35 @@ function convertMoney(sum, currencyAccount, currencyRate, requiredCurrency) {
     if ((sum >= 0) && (currencyAccount === requiredCurrency)) {
         return sum;
     }
-
-    function getRate(rate, currency) {
-        let currencyRate;
-
-        for (i = 0; i < rate.length; i++) {
-            if (currency === rate[i].ccy) {
-                currencyRate = rate[i];
+    
+    let rate;
+    
+    function getRate(currency) {
+                
+        for (i = 0; i < currencyRate.length; i++) {
+            if (currency === currencyRate[i].ccy) {
+                rate = currencyRate[i];
             }
         }
 
         if (currencyRate === undefined) {
             alert("this type of currency is not found");
             document.querySelector('body').innerHTML = '';
-
             returnStartForm();
 
             throw new Error("this type of currency is not found");
         }
-
-        return currencyRate;
+        return rate;
     }
 
     let requiredCurrencyRate;
 
     if (requiredCurrency !== 'UAH') {
-        requiredCurrencyRate = getRate(currencyRate, requiredCurrency);
+        requiredCurrencyRate = getRate(requiredCurrency);
     }
 
     if ((sum >= 0) && (currencyAccount !== 'UAH')) {
-        let accountCurrencyRate = getRate(currencyRate, currencyAccount);
+        let accountCurrencyRate = getRate(currencyAccount);
 
         let accountUah = sum * accountCurrencyRate.sale;
 
@@ -55,19 +54,19 @@ function convertMoney(sum, currencyAccount, currencyRate, requiredCurrency) {
 
 function calculatSumBank(rate, requiredCurrency, callback) {
     let sumBankUsd = 0;
-
+    let rateCurrencyCallback = callback.bind({}, rate, requiredCurrency)
     for (let i = 0; i < bank.length; i++) {
-
-        for (let j = 0; j < bank[i].credit.length; j++) {
-            if (bank[i].credit[j].ownMoney > 0) {
-                sumBankUsd += callback(bank[i].credit[j].ownMoney, bank[i].credit[j].currency, rate, requiredCurrency);
+        let {credit, debet} = bank[i];
+        for (let j = 0; j < credit.length; j++) {
+            if (credit[j].ownMoney > 0) {
+                sumBankUsd += rateCurrencyCallback(credit[j].ownMoney, credit[j].currency);
             }
 
-            sumBankUsd += callback(bank[i].credit[j].creditMoney, bank[i].credit[j].currency, rate, requiredCurrency);
+            sumBankUsd += rateCurrencyCallback(credit[j].creditMoney, credit[j].currency);
         }
 
-        for (let k = 0; k < bank[i].debet.length; k++) {
-            sumBankUsd += callback(bank[i].debet[k].ownMoney, bank[i].debet[k].currency, rate, requiredCurrency);
+        for (let j = 0; j < bank[i].debet.length; j++) {
+            sumBankUsd += rateCurrencyCallback(debet[j].ownMoney, debet[j].currency);
         }
     }
 
@@ -91,7 +90,7 @@ function calculatDebt(rate, requiredCurrency, convertCallback, sumKey, countKey,
             for (let j = 0; j < bank[i].credit.length; j++) {
                        
                 if (bank[i].credit[j].ownMoney < 0) {
-                    debtActiveUsd += convertCallback(Math.abs(bank[i].credit[j].ownMoney), bank[i].credit[j].currency, rate, requiredCurrency);
+                    debtActiveUsd += convertCallback(rate, requiredCurrency, Math.abs(bank[i].credit[j].ownMoney), bank[i].credit[j].currency);
                     count = count || 1;
                 }
 

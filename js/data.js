@@ -58,11 +58,9 @@ function getSearchUserData(idClient) {
     for (let i = 0; i < bank.length; i++) {
 
         if (bank[i].id === Number(idClient)) {
-            let searchUser = bank[i];
-            return searchUser;
+            return bank[i];
         }
     }
-    return;
 }
 
 function deleteUser(idDeleteUser) {

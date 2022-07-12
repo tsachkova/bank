@@ -1,25 +1,27 @@
+let editedClientGetPut;
+
 class GetPutClientData {
     constructor(clientData) {
         this.clientData = clientData;
+        this.idEditClient;
+        this.dateEditClient;
     }
-
     putEditedClientData() {
         if (!this.clientData) {
             alert('в базе нет клиента с таким id');
             returnStartForm();
             return;
         }
-
+        this.idEditClient = this.clientData.id;
+        this.dateEditClient = this.clientData.date;
         document.getElementById('firstName').value = this.clientData.firstName;
         document.getElementById('lastName').value = this.clientData.lastName;
 
         if (this.clientData.isActive) {
             document.getElementById('isActive').setAttribute('checked', `checked`);
         }
-
-        document.getElementById('idEditClient').setAttribute('data-idInfo', `${this.clientData.id}`);
+        
         document.getElementById('idEditClient').textContent += `${this.clientData.id}`;
-        document.getElementById('dateEditClient').setAttribute('data-dateInfo', `${this.clientData.date}`);
         document.getElementById('dateEditClient').textContent += `${this.clientData.date}`;
 
         let debetAccountForms = document.getElementById('debet');
@@ -34,7 +36,7 @@ class GetPutClientData {
             new Accounts(this.clientData.credit[i], creditAccountForms).generateAccountsForm().putAccountsData();
         }
     }
-
+    
     getClientData() {
         let newClientData = {};
 
@@ -50,23 +52,21 @@ class GetPutClientData {
 
         newClientData.isActive = document.getElementById('isActive').checked;
 
-        if (document.getElementById('dateEditClient')) {
-            newClientData.date = document.getElementById('dateEditClient').getAttribute('data-dateinfo');
+        if (this.dateEditClient) {
+            newClientData.date = this.dateEditClient;
         } else {
             newClientData.date = new Date().toString().match(/[A-Za-z]{3}\s\d\d\s\d{4}/)[0];
         }
 
         newClientData.id = 1;
-        if (!document.getElementById('idEditClient')) {
+        if (this.idEditClient) {
+            newClientData.id = Number(this.idEditClient);
+        } else {
             for (let i = 0; i < bank.length; i++) {
-
                 if (newClientData.id <= bank[i].id) {
                     newClientData.id = parseInt(bank[i].id) + 1;
                 }
             }
-        } else {
-            newClientData.id = Number(document.getElementById('idEditClient').getAttribute('data-idInfo'));
-
         }
 
         let accountsDebet = document.getElementById('debet').getElementsByTagName('fieldset');
@@ -80,13 +80,10 @@ class GetPutClientData {
         }
 
         return newClientData;
-
     }
 
     deleteOldUserData() {
-        if (document.getElementById('idEditClient')) {
-            deleteUser(Number(document.getElementById('idEditClient').getAttribute('data-idinfo')));
-        }
+        deleteUser(Number(this.idEditClient));
         return this;
     }
 }
